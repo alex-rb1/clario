@@ -39,3 +39,5 @@ React, TypeScript, Vite, React Flow, Tiptap, and Lowlight. Local browser persist
 Foundation only; editing and persistence arrive in subsequent milestones. Theme preference is saved locally. Fonts use Google Fonts with system fallbacks.
 
 Milestone 2 complete: double-click creation, dragging, resizing, selection/multi-selection, duplicate/delete, and arrow connections. Browser tests live in `tests/`; run `npx playwright test` with Chrome installed. Automatic fitting is deliberately avoided while adding nodes, so the canvas stays under the cursor.
+
+Milestone 3 complete: editable node titles and Tiptap rich text with a contextual toolbar, headings/font sizes, emphasis, lists, inline code, alignment, and HTTP(S) links. Click Edit or double-click content to edit; drag the node header to move it. Formatting and canvas browser tests pass.

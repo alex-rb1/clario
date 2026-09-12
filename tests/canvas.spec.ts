@@ -7,7 +7,7 @@ test('create, move, resize, connect, multi-select, duplicate, and delete nodes',
  const nodes=page.locator('.react-flow__node-block')
  await expect(nodes).toHaveCount(2)
  const first=nodes.first(); const before=await first.boundingBox(); if(!before)throw Error('No node')
- await first.locator('.block-title').hover(); await page.mouse.down(); await page.mouse.move(before.x+150,before.y+80,{steps:10}); await page.mouse.up()
+ await first.locator('.block-title').hover({position:{x:5,y:5}}); await page.mouse.down(); await page.mouse.move(before.x+50,before.y+80,{steps:10}); await page.mouse.up()
  expect((await first.boundingBox())!.x).not.toBe(before.x)
  await first.click()
  const resize=first.locator('.react-flow__resize-control.bottom.right'); await resize.hover(); await page.mouse.down(); await page.mouse.move((await first.boundingBox())!.x+350,(await first.boundingBox())!.y+230,{steps:10});await page.mouse.up()
