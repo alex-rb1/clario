@@ -41,3 +41,5 @@ Foundation only; editing and persistence arrive in subsequent milestones. Theme 
 Milestone 2 complete: double-click creation, dragging, resizing, selection/multi-selection, duplicate/delete, and arrow connections. Browser tests live in `tests/`; run `npx playwright test` with Chrome installed. Automatic fitting is deliberately avoided while adding nodes, so the canvas stays under the cursor.
 
 Milestone 3 complete: editable node titles and Tiptap rich text with a contextual toolbar, headings/font sizes, emphasis, lists, inline code, alignment, and HTTP(S) links. Click Edit or double-click content to edit; drag the node header to move it. Formatting and canvas browser tests pass.
+
+Milestone 4 complete: standard, process, decision, input/output, note, and code node styles; language-selectable highlighted code and clipboard copying; editable directional connection labels and solid/dashed lines. Code is edited as plain text and highlighted on finishing. Browser checks cover code highlighting/copy and edge styling.
