@@ -27,7 +27,17 @@ test('code nodes highlight and copy source; connections accept labels and dashed
     .locator('.react-flow__handle-right')
     .first()
     .dragTo(page.locator('.react-flow__handle-left').nth(1))
-  await page.locator('.react-flow__edge-interaction').click({ force: true })
+  const wirePoint = await page
+    .locator('.react-flow__edge-path')
+    .evaluate((element) => {
+      const path = element as SVGPathElement
+      const point = path.getPointAtLength(path.getTotalLength() / 2)
+      const screen = new DOMPoint(point.x, point.y).matrixTransform(
+        path.getScreenCTM()!,
+      )
+      return { x: screen.x, y: screen.y }
+    })
+  await page.mouse.click(wirePoint.x, wirePoint.y)
   await page.getByLabel('Connection label').fill('next')
   await page.getByLabel('Connection style').selectOption('dashed')
   await expect(page.locator('.react-flow__edge-text')).toHaveText('next')

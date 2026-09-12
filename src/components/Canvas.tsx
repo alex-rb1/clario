@@ -31,6 +31,8 @@ import { useAutosave, downloadDocument } from '../lib/useAutosave'
 import Dialog from './Dialog'
 import { useCanvasShortcuts } from '../lib/useCanvasShortcuts'
 import CanvasToolbar from './CanvasToolbar'
+import RoutedEdge from './RoutedEdge'
+const edgeTypes = { default: RoutedEdge }
 const nodeTypes = { block: BlockNode }
 export default function Canvas({ dark }: { dark: boolean }) {
   const { id } = useParams()
@@ -217,6 +219,7 @@ function CanvasEditor({
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
