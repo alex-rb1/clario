@@ -27,7 +27,9 @@ test('create, move, resize, connect, multi-select, duplicate, and delete nodes',
   )
   await page.mouse.up()
   expect((await first.boundingBox())!.width).toBeGreaterThan(280)
-  await first.locator('.source').dragTo(nodes.nth(1).locator('.target'))
+  await first
+    .locator('.react-flow__handle-right')
+    .dragTo(nodes.nth(1).locator('.react-flow__handle-left'))
   await expect(page.locator('.react-flow__edge')).toHaveCount(1)
   await first.click()
   await nodes.nth(1).click({ modifiers: ['Meta'] })

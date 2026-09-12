@@ -23,7 +23,10 @@ test('code nodes highlight and copy source; connections accept labels and dashed
   await page
     .locator('.react-flow__pane')
     .dblclick({ position: { x: 750, y: 400 } })
-  await page.locator('.source').first().dragTo(page.locator('.target').nth(1))
+  await page
+    .locator('.react-flow__handle-right')
+    .first()
+    .dragTo(page.locator('.react-flow__handle-left').nth(1))
   await page.locator('.react-flow__edge-interaction').click({ force: true })
   await page.getByLabel('Connection label').fill('next')
   await page.getByLabel('Connection style').selectOption('dashed')

@@ -46,6 +46,7 @@ export default function BlockNode({ id, data, selected }: NodeProps<Block>) {
     >
       <NodeResizer isVisible={selected} minWidth={220} minHeight={140} />
       <Handle type="target" position={Position.Left} />
+      <Handle id="top" type="target" position={Position.Top} />
       <div className="block-title" onDoubleClick={startEditing}>
         <input
           className={active ? 'nodrag' : 'read-title'}
@@ -87,6 +88,7 @@ export default function BlockNode({ id, data, selected }: NodeProps<Block>) {
         )}
       </div>
       <Handle type="source" position={Position.Right} />
+      <Handle id="bottom" type="source" position={Position.Bottom} />
     </div>
   )
 }

@@ -30,7 +30,10 @@ test('create, edit, close, reopen, rename, and delete a saved canvas', async ({
   await page
     .locator('.react-flow__pane')
     .dblclick({ position: { x: 650, y: 350 } })
-  await page.locator('.source').first().dragTo(page.locator('.target').nth(1))
+  await page
+    .locator('.react-flow__handle-right')
+    .first()
+    .dragTo(page.locator('.react-flow__handle-left').nth(1))
   const url = page.url()
   await expect(page.getByRole('status')).toHaveText('Saved locally')
   await page.close()
