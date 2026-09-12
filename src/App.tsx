@@ -1,14 +1,17 @@
-import { useState } from 'react'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { Moon, Sun, Workflow } from 'lucide-react'
 import Canvas from './components/Canvas'
-import { ArrowUpRight, Moon, Plus, Sun, Workflow } from 'lucide-react'
+import Dashboard from './components/Dashboard'
+import { createCanvas } from './lib/storage'
 import '@xyflow/react/dist/style.css'
 import './App.css'
-
+// Creation synchronizes with storage and reports storage errors to the user.
+// eslint-disable-next-line react/set-state-in-effect
+function NewCanvas(){const navigate=useNavigate();const once=useRef(false);const [error,setError]=useState('');useEffect(()=>{if(once.current)return;once.current=true;try{navigate(`/canvas/${createCanvas().id}`,{replace:true})}catch{setError('Cannot create a canvas: browser storage is unavailable.')}},[navigate]);return <main>{error||'Opening your canvas…'}</main>}
 function App() {
-  const [dark, setDark] = useState(() => localStorage.getItem('clario-theme') !== 'light')
-  function toggleTheme() { const next = !dark; setDark(next); localStorage.setItem('clario-theme', next ? 'dark' : 'light') }
-  return <div className="app" data-theme={dark ? 'dark' : 'light'}><BrowserRouter><header><Link className="brand" to="/"><Workflow size={23} />clario<span> / space to think</span></Link><button aria-label="Toggle theme" onClick={toggleTheme}>{dark ? <Sun size={18}/> : <Moon size={18}/>}</button></header><Routes><Route path="/" element={<Dashboard/>}/><Route path="/canvas/:id" element={<Canvas dark={dark}/>}/></Routes></BrowserRouter></div>
+ const [dark,setDark]=useState(()=>{try{return localStorage.getItem('clario-theme')!=='light'}catch{return true}})
+ function toggleTheme(){const next=!dark;setDark(next);try{localStorage.setItem('clario-theme',next?'dark':'light')}catch{/* Theme remains usable without storage. */}}
+ return <div className="app" data-theme={dark?'dark':'light'}><BrowserRouter><header><Link className="brand" to="/"><Workflow size={23}/>clario<span> / space to think</span></Link><button aria-label="Toggle theme" onClick={toggleTheme}>{dark?<Sun size={18}/>:<Moon size={18}/>}</button></header><Routes><Route path="/" element={<Dashboard/>}/><Route path="/canvas/new" element={<NewCanvas/>}/><Route path="/canvas/:id" element={<Canvas dark={dark}/>}/><Route path="*" element={<main><h1>A little off-canvas.</h1><Link className="primary" to="/">Back to your canvases</Link></main>}/></Routes></BrowserRouter></div>
 }
-function Dashboard() {return <main><div className="eyebrow">YOUR THINKING SPACE</div><div className="intro"><div><h1>Make room for<br/><span>your next idea.</span></h1><p>Untangle a problem. Map a system. Connect the dots.</p></div><Link className="primary" to="/canvas/new"><Plus size={18}/>New canvas</Link></div><div className="section-heading"><h2>Your canvases</h2><span className="muted">A little clarity goes a long way.</span></div><Link className="empty-card" to="/canvas/new"><div className="mini-diagram"><i/><b/><i/><b/><i/></div><h3>Start with a blank canvas <ArrowUpRight size={18}/></h3><p>Big ideas start with one small node.</p></Link><footer>BUILT FOR THE WAY DEVELOPERS THINK <span>Private by default. Yours to explore.</span></footer></main>}
 export default App
