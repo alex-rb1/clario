@@ -1,21 +1,43 @@
 import { test, expect } from '@playwright/test'
-test('create, move, resize, connect, multi-select, duplicate, and delete nodes', async ({page})=>{
- await page.goto('/canvas/new')
- const pane=page.locator('.react-flow__pane')
- await pane.dblclick({position:{x:250,y:200}})
- await pane.dblclick({position:{x:700,y:400}})
- const nodes=page.locator('.react-flow__node-block')
- await expect(nodes).toHaveCount(2)
- const first=nodes.first(); const before=await first.boundingBox(); if(!before)throw Error('No node')
- await first.locator('.block-title').hover({position:{x:5,y:5}}); await page.mouse.down(); await page.mouse.move(before.x+50,before.y+80,{steps:10}); await page.mouse.up()
- expect((await first.boundingBox())!.x).not.toBe(before.x)
- await first.click()
- const resize=first.locator('.react-flow__resize-control.bottom.right'); await resize.hover(); await page.mouse.down(); await page.mouse.move((await first.boundingBox())!.x+350,(await first.boundingBox())!.y+230,{steps:10});await page.mouse.up()
- expect((await first.boundingBox())!.width).toBeGreaterThan(280)
- await first.locator('.source').dragTo(nodes.nth(1).locator('.target'))
- await expect(page.locator('.react-flow__edge')).toHaveCount(1)
- await first.click(); await nodes.nth(1).click({modifiers:['Meta']})
- await expect(page.locator('.react-flow__node.selected')).toHaveCount(2)
- await page.getByRole('button',{name:'Duplicate selected',exact:true}).click(); await expect(nodes).toHaveCount(4)
- await page.getByRole('button',{name:'Delete selected',exact:true}).click(); await expect(nodes).toHaveCount(2)
+test('create, move, resize, connect, multi-select, duplicate, and delete nodes', async ({
+  page,
+}) => {
+  await page.goto('/canvas/new')
+  const pane = page.locator('.react-flow__pane')
+  await pane.dblclick({ position: { x: 250, y: 200 } })
+  await pane.dblclick({ position: { x: 700, y: 400 } })
+  const nodes = page.locator('.react-flow__node-block')
+  await expect(nodes).toHaveCount(2)
+  const first = nodes.first()
+  const before = await first.boundingBox()
+  if (!before) throw Error('No node')
+  await first.locator('.block-title').hover({ position: { x: 5, y: 5 } })
+  await page.mouse.down()
+  await page.mouse.move(before.x + 50, before.y + 80, { steps: 10 })
+  await page.mouse.up()
+  expect((await first.boundingBox())!.x).not.toBe(before.x)
+  await first.click()
+  const resize = first.locator('.react-flow__resize-control.bottom.right')
+  await resize.hover()
+  await page.mouse.down()
+  await page.mouse.move(
+    (await first.boundingBox())!.x + 350,
+    (await first.boundingBox())!.y + 230,
+    { steps: 10 },
+  )
+  await page.mouse.up()
+  expect((await first.boundingBox())!.width).toBeGreaterThan(280)
+  await first.locator('.source').dragTo(nodes.nth(1).locator('.target'))
+  await expect(page.locator('.react-flow__edge')).toHaveCount(1)
+  await first.click()
+  await nodes.nth(1).click({ modifiers: ['Meta'] })
+  await expect(page.locator('.react-flow__node.selected')).toHaveCount(2)
+  await page
+    .getByRole('button', { name: 'Duplicate selected', exact: true })
+    .click()
+  await expect(nodes).toHaveCount(4)
+  await page
+    .getByRole('button', { name: 'Delete selected', exact: true })
+    .click()
+  await expect(nodes).toHaveCount(2)
 })

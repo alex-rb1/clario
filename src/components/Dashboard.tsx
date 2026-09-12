@@ -1,21 +1,265 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, ArrowUpRight, Pencil, Trash2, Search } from 'lucide-react'
-import { createCanvas, deleteCanvas, listCanvases, renameCanvas } from '../lib/storage'
+import {
+  Plus,
+  ArrowUpRight,
+  Pencil,
+  Trash2,
+  Search,
+  Upload,
+} from 'lucide-react'
+import {
+  createCanvas,
+  importCanvas,
+  deleteCanvas,
+  listCanvases,
+  renameCanvas,
+} from '../lib/storage'
 import type { CanvasDocument } from '../lib/types'
 import CanvasPreview from './CanvasPreview'
 import Dialog from './Dialog'
 import TemplatePicker from './TemplatePicker'
 import { buildTemplate, templates, type TemplateId } from '../lib/templates'
-export default function Dashboard(){
- const navigate=useNavigate()
- const [data,setData]=useState(()=>{try{return {...listCanvases(),error:''}}catch{return {documents:[],unreadable:0,error:'Browser storage is unavailable. Enable storage to use Clario.'}}})
- const [picker,setPicker]=useState(false)
- const [search,setSearch]=useState(''),[action,setAction]=useState<{kind:'rename'|'delete';doc:CanvasDocument}|null>(null),[name,setName]=useState('')
- const refresh=()=>setData({...listCanvases(),error:''})
- const perform=(fn:()=>void)=>{try{fn()}catch(e){setData(d=>({...d,error:e instanceof Error?e.message:'Unable to access browser storage.'}))}}
- const create=()=>setPicker(true)
- const choose=(id:TemplateId)=>perform(()=>{const template=templates.find(t=>t.id===id)!;navigate(`/canvas/${createCanvas(id==='blank'?'Untitled canvas':template.name,buildTemplate(id)).id}`)})
- const documents=data.documents.filter(d=>d.name.toLowerCase().includes(search.toLowerCase()))
- return <main><div className="eyebrow">YOUR THINKING SPACE</div><div className="intro"><div><h1>Make room for<br/><span>your next idea.</span></h1><p>Untangle a problem. Map a system. Connect the dots.</p></div><button className="primary" onClick={create}><Plus size={18}/>New canvas</button></div>{data.error&&<div className="error-banner" role="alert">{data.error}</div>}{data.unreadable>0&&<div className="error-banner" role="alert">{data.unreadable} saved canvas could not be read. Its data has been preserved.</div>}<div className="section-heading"><h2>Your canvases <small>{data.documents.length}</small></h2><label className="search"><Search size={15}/><input aria-label="Search canvases" placeholder="Find a canvas…" value={search} onChange={e=>setSearch(e.target.value)}/></label></div><div className="canvas-grid">{documents.map(doc=><article className="canvas-card" key={doc.id}><Link to={`/canvas/${doc.id}`} aria-label={`Open ${doc.name}`}><CanvasPreview document={doc}/><div className="card-copy"><h3>{doc.name}<ArrowUpRight size={16}/></h3><p>{doc.nodes.filter(n=>n.data.kind!=='section').length} nodes <span>Edited {new Date(doc.updatedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span></p></div></Link><div className="card-actions"><button aria-label={`Rename ${doc.name}`} onClick={()=>{setAction({kind:'rename',doc});setName(doc.name)}}><Pencil size={14}/></button><button aria-label={`Delete ${doc.name}`} onClick={()=>setAction({kind:'delete',doc})}><Trash2 size={14}/></button></div></article>)}{data.documents.length===0&&<button className="empty-card" onClick={()=>choose('blank')}><div className="mini-diagram"><i/><b/><i/><b/><i/></div><h3>Start with a blank canvas <ArrowUpRight size={18}/></h3><p>Big ideas start with one small node.</p></button>}{documents.length===0&&data.documents.length>0&&<p>No canvases match “{search}”.</p>}</div><footer>BUILT FOR THE WAY DEVELOPERS THINK <span>Saved on this browser. A space of your own.</span></footer>{picker&&<TemplatePicker onClose={()=>setPicker(false)} onChoose={choose}/>} {action&&<Dialog title={action.kind==='rename'?'Rename canvas':'Delete canvas?'} onClose={()=>setAction(null)}>{action.kind==='rename'?<form onSubmit={e=>{e.preventDefault();perform(()=>{renameCanvas(action.doc.id,name);refresh();setAction(null)})}}><label className="field">Canvas name<input autoFocus value={name} onChange={e=>setName(e.target.value)} maxLength={120}/></label><button className="primary" type="submit">Rename canvas</button></form>:<><p>“{action.doc.name}” and its diagram will be deleted from this browser. This cannot be undone.</p><div className="dialog-actions"><button onClick={()=>setAction(null)}>Cancel</button><button className="danger" onClick={()=>perform(()=>{deleteCanvas(action.doc.id);refresh();setAction(null)})}>Delete canvas</button></div></>}</Dialog>}</main>
+export default function Dashboard() {
+  const navigate = useNavigate()
+  const importInput = useRef<HTMLInputElement>(null)
+  const [data, setData] = useState(() => {
+    try {
+      return { ...listCanvases(), error: '' }
+    } catch {
+      return {
+        documents: [],
+        unreadable: 0,
+        error: 'Browser storage is unavailable. Enable storage to use Clario.',
+      }
+    }
+  })
+  const [picker, setPicker] = useState(false)
+  const [search, setSearch] = useState(''),
+    [action, setAction] = useState<{
+      kind: 'rename' | 'delete'
+      doc: CanvasDocument
+    } | null>(null),
+    [name, setName] = useState('')
+  const refresh = () => setData({ ...listCanvases(), error: '' })
+  const perform = (fn: () => void) => {
+    try {
+      fn()
+    } catch (e) {
+      setData((d) => ({
+        ...d,
+        error:
+          e instanceof Error ? e.message : 'Unable to access browser storage.',
+      }))
+    }
+  }
+  const create = () => setPicker(true)
+  const choose = (id: TemplateId) =>
+    perform(() => {
+      const template = templates.find((t) => t.id === id)!
+      navigate(
+        `/canvas/${createCanvas(id === 'blank' ? 'Untitled canvas' : template.name, buildTemplate(id)).id}`,
+      )
+    })
+  const documents = data.documents.filter((d) =>
+    d.name.toLowerCase().includes(search.toLowerCase()),
+  )
+  return (
+    <main>
+      <div className="eyebrow">YOUR THINKING SPACE</div>
+      <div className="intro">
+        <div>
+          <h1>
+            Make room for
+            <br />
+            <span>your next idea.</span>
+          </h1>
+          <p>Untangle a problem. Map a system. Connect the dots.</p>
+        </div>
+        <div className="dashboard-actions">
+          <button onClick={() => importInput.current?.click()}>
+            <Upload size={16} />
+            Import backup
+          </button>
+          <button className="primary" onClick={create}>
+            <Plus size={18} />
+            New canvas
+          </button>
+        </div>
+        <input
+          ref={importInput}
+          hidden
+          type="file"
+          accept=".json"
+          aria-label="Import canvas backup"
+          onChange={async (e) => {
+            const file = e.target.files?.[0]
+            if (!file) return
+            try {
+              if (file.size > 10_000_000)
+                throw Error('Choose a backup smaller than 10 MB.')
+              navigate(`/canvas/${importCanvas(await file.text()).id}`)
+            } catch (error) {
+              setData((d) => ({
+                ...d,
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : 'Unable to import backup.',
+              }))
+              setPicker(false)
+            }
+            e.target.value = ''
+          }}
+        />
+      </div>
+      {data.error && (
+        <div className="error-banner" role="alert">
+          {data.error}
+        </div>
+      )}
+      {data.unreadable > 0 && (
+        <div className="error-banner" role="alert">
+          {data.unreadable} saved canvas could not be read. Its data has been
+          preserved.
+        </div>
+      )}
+      <div className="section-heading">
+        <h2>
+          Your canvases <small>{data.documents.length}</small>
+        </h2>
+        <label className="search">
+          <Search size={15} />
+          <input
+            aria-label="Search canvases"
+            placeholder="Find a canvas…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </label>
+      </div>
+      <div className="canvas-grid">
+        {documents.map((doc) => (
+          <article className="canvas-card" key={doc.id}>
+            <Link to={`/canvas/${doc.id}`} aria-label={`Open ${doc.name}`}>
+              <CanvasPreview document={doc} />
+              <div className="card-copy">
+                <h3>
+                  {doc.name}
+                  <ArrowUpRight size={16} />
+                </h3>
+                <p>
+                  {doc.nodes.filter((n) => n.data.kind !== 'section').length}{' '}
+                  nodes{' '}
+                  <span>
+                    Edited{' '}
+                    {new Date(doc.updatedAt).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </span>
+                </p>
+              </div>
+            </Link>
+            <div className="card-actions">
+              <button
+                aria-label={`Rename ${doc.name}`}
+                onClick={() => {
+                  setAction({ kind: 'rename', doc })
+                  setName(doc.name)
+                }}
+              >
+                <Pencil size={14} />
+              </button>
+              <button
+                aria-label={`Delete ${doc.name}`}
+                onClick={() => setAction({ kind: 'delete', doc })}
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+          </article>
+        ))}
+        {data.documents.length === 0 && (
+          <button className="empty-card" onClick={() => choose('blank')}>
+            <div className="mini-diagram">
+              <i />
+              <b />
+              <i />
+              <b />
+              <i />
+            </div>
+            <h3>
+              Start with a blank canvas <ArrowUpRight size={18} />
+            </h3>
+            <p>Big ideas start with one small node.</p>
+          </button>
+        )}
+        {documents.length === 0 && data.documents.length > 0 && (
+          <p>No canvases match “{search}”.</p>
+        )}
+      </div>
+      <footer>
+        BUILT FOR THE WAY DEVELOPERS THINK{' '}
+        <span>Saved on this browser. A space of your own.</span>
+      </footer>
+      {picker && (
+        <TemplatePicker onClose={() => setPicker(false)} onChoose={choose} />
+      )}{' '}
+      {action && (
+        <Dialog
+          title={action.kind === 'rename' ? 'Rename canvas' : 'Delete canvas?'}
+          onClose={() => setAction(null)}
+        >
+          {action.kind === 'rename' ? (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                perform(() => {
+                  renameCanvas(action.doc.id, name)
+                  refresh()
+                  setAction(null)
+                })
+              }}
+            >
+              <label className="field">
+                Canvas name
+                <input
+                  autoFocus
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  maxLength={120}
+                />
+              </label>
+              <button className="primary" type="submit">
+                Rename canvas
+              </button>
+            </form>
+          ) : (
+            <>
+              <p>
+                “{action.doc.name}” and its diagram will be deleted from this
+                browser. This cannot be undone.
+              </p>
+              <div className="dialog-actions">
+                <button onClick={() => setAction(null)}>Cancel</button>
+                <button
+                  className="danger"
+                  onClick={() =>
+                    perform(() => {
+                      deleteCanvas(action.doc.id)
+                      refresh()
+                      setAction(null)
+                    })
+                  }
+                >
+                  Delete canvas
+                </button>
+              </div>
+            </>
+          )}
+        </Dialog>
+      )}
+    </main>
+  )
 }

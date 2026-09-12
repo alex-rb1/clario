@@ -1,29 +1,116 @@
 import { test, expect } from '@playwright/test'
-test('create, edit, close, reopen, rename, and delete a saved canvas',async({page,context})=>{
- await page.goto('/');await page.getByRole('button',{name:'New canvas',exact:true}).click();await page.locator('.template-option').filter({has:page.getByText('Blank',{exact:true})}).click()
- await page.getByLabel('Canvas name',{exact:true}).fill('Architecture notes')
- await page.locator('.react-flow__pane').dblclick({position:{x:160,y:200}})
- await page.getByLabel('Node title',{exact:true}).fill('API gateway')
- await page.getByRole('button',{name:'Edit node',exact:true}).click();await page.getByRole('textbox',{name:'Node content'}).fill('Validate incoming requests')
- await page.getByRole('button',{name:'Finish editing',exact:true}).click()
- await page.locator('.react-flow__pane').dblclick({position:{x:650,y:350}})
- await page.locator('.source').first().dragTo(page.locator('.target').nth(1))
- const url=page.url();await expect(page.getByRole('status')).toHaveText('Saved locally');await page.close()
- const reopened=await context.newPage();await reopened.goto(url)
- await expect(reopened.getByLabel('Canvas name',{exact:true})).toHaveValue('Architecture notes')
- await expect(reopened.locator('.react-flow__node-block')).toHaveCount(2);await expect(reopened.locator('.react-flow__edge')).toHaveCount(1)
- await expect(reopened.getByLabel('Node title',{exact:true}).first()).toHaveValue('API gateway')
- await expect(reopened.locator('.node-editor').first()).toHaveText('Validate incoming requests')
- await reopened.getByRole('link',{name:'Back to canvases',exact:true}).click()
- await reopened.getByRole('button',{name:'Rename Architecture notes',exact:true}).click();await reopened.getByLabel('Canvas name').fill('Request flow');await reopened.getByRole('button',{name:'Rename canvas',exact:true}).click()
- await expect(reopened.getByRole('link',{name:'Open Request flow',exact:true})).toBeVisible()
- await reopened.getByRole('button',{name:'Delete Request flow',exact:true}).click();await reopened.getByRole('button',{name:'Delete canvas',exact:true}).click();await expect(reopened.getByRole('link',{name:'Open Request flow',exact:true})).toHaveCount(0)
+test('create, edit, close, reopen, rename, and delete a saved canvas', async ({
+  page,
+  context,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'New canvas', exact: true }).click()
+  await page
+    .locator('.template-option')
+    .filter({ has: page.getByText('Blank', { exact: true }) })
+    .click()
+  await page
+    .getByLabel('Canvas name', { exact: true })
+    .fill('Architecture notes')
+  await page
+    .locator('.react-flow__pane')
+    .dblclick({ position: { x: 160, y: 200 } })
+  await page.getByLabel('Node title', { exact: true }).fill('API gateway')
+  await page.getByRole('button', { name: 'Edit node', exact: true }).click()
+  await page
+    .getByRole('textbox', { name: 'Node content' })
+    .fill('Validate incoming requests')
+  await page
+    .getByRole('button', { name: 'Finish editing', exact: true })
+    .click()
+  await page
+    .locator('.react-flow__pane')
+    .dblclick({ position: { x: 650, y: 350 } })
+  await page.locator('.source').first().dragTo(page.locator('.target').nth(1))
+  const url = page.url()
+  await expect(page.getByRole('status')).toHaveText('Saved locally')
+  await page.close()
+  const reopened = await context.newPage()
+  await reopened.goto(url)
+  await expect(reopened.getByLabel('Canvas name', { exact: true })).toHaveValue(
+    'Architecture notes',
+  )
+  await expect(reopened.locator('.react-flow__node-block')).toHaveCount(2)
+  await expect(reopened.locator('.react-flow__edge')).toHaveCount(1)
+  await expect(
+    reopened.getByLabel('Node title', { exact: true }).first(),
+  ).toHaveValue('API gateway')
+  await expect(reopened.locator('.node-editor').first()).toHaveText(
+    'Validate incoming requests',
+  )
+  await reopened
+    .getByRole('link', { name: 'Back to canvases', exact: true })
+    .click()
+  await reopened
+    .getByRole('button', { name: 'Rename Architecture notes', exact: true })
+    .click()
+  await reopened.getByLabel('Canvas name').fill('Request flow')
+  await reopened
+    .getByRole('button', { name: 'Rename canvas', exact: true })
+    .click()
+  await expect(
+    reopened.getByRole('link', { name: 'Open Request flow', exact: true }),
+  ).toBeVisible()
+  await reopened
+    .getByRole('button', { name: 'Delete Request flow', exact: true })
+    .click()
+  await reopened
+    .getByRole('button', { name: 'Delete canvas', exact: true })
+    .click()
+  await expect(
+    reopened.getByRole('link', { name: 'Open Request flow', exact: true }),
+  ).toHaveCount(0)
 })
-test('storage failures are visible and corrupt saved data is preserved',async({page})=>{
- await page.goto('/canvas/new');await page.getByRole('button',{name:'Add node',exact:true}).waitFor()
- await page.evaluate(()=>{Storage.prototype.setItem=function(){throw new DOMException('Full','QuotaExceededError')}})
- await page.getByRole('button',{name:'Add node',exact:true}).click();await expect(page.getByRole('status')).toContainText('Not saved')
- await page.reload();await page.evaluate(()=>localStorage.setItem('clario:canvas:broken','invalid'))
- await page.goto('/canvas/broken');await expect(page.getByRole('heading')).toContainText('could not be read')
- expect(await page.evaluate(()=>localStorage.getItem('clario:canvas:broken'))).toBe('invalid')
+test('storage failures are visible and corrupt saved data is preserved', async ({
+  page,
+}) => {
+  await page.goto('/canvas/new')
+  await page.getByRole('button', { name: 'Add node', exact: true }).waitFor()
+  await page.evaluate(() => {
+    Storage.prototype.setItem = function () {
+      throw new DOMException('Full', 'QuotaExceededError')
+    }
+  })
+  await page.getByRole('button', { name: 'Add node', exact: true }).click()
+  await expect(page.getByRole('status')).toContainText('Not saved')
+  await page.reload()
+  await page.evaluate(() =>
+    localStorage.setItem('clario:canvas:broken', 'invalid'),
+  )
+  await page.goto('/canvas/broken')
+  await expect(page.getByRole('heading')).toContainText('could not be read')
+  expect(
+    await page.evaluate(() => localStorage.getItem('clario:canvas:broken')),
+  ).toBe('invalid')
+})
+
+test('backup import creates an independent editable canvas', async ({
+  page,
+}) => {
+  await page.goto('/canvas/new')
+  await page.getByRole('button', { name: 'Add node', exact: true }).click()
+  await page.getByLabel('Node title', { exact: true }).fill('Recovered idea')
+  const download = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Download backup' }).click()
+  const file = await (await download).path()
+  if (!file) throw Error('No backup')
+  await page
+    .getByRole('link', { name: 'Back to canvases', exact: true })
+    .click()
+  await page.getByLabel('Import canvas backup').setInputFiles(file)
+  await expect(page.getByLabel('Canvas name', { exact: true })).toHaveValue(
+    'Untitled canvas (imported)',
+  )
+  await expect(page.getByLabel('Node title', { exact: true })).toHaveValue(
+    'Recovered idea',
+  )
+  await page
+    .getByRole('link', { name: 'Back to canvases', exact: true })
+    .click()
+  await expect(page.locator('.canvas-card')).toHaveCount(2)
 })
