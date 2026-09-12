@@ -37,3 +37,5 @@ React, TypeScript, Vite, React Flow, Tiptap, and Lowlight. Local browser persist
 ## Current limitations
 
 Foundation only; editing and persistence arrive in subsequent milestones. Theme preference is saved locally. Fonts use Google Fonts with system fallbacks.
+
+Milestone 2 complete: double-click creation, dragging, resizing, selection/multi-selection, duplicate/delete, and arrow connections. Browser tests live in `tests/`; run `npx playwright test` with Chrome installed. Automatic fitting is deliberately avoided while adding nodes, so the canvas stays under the cursor.
