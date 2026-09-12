@@ -72,7 +72,7 @@ export default function RichEditor({
   )
   return (
     <div
-      className="rich-editor nodrag nowheel"
+      className={`rich-editor ${active ? 'nodrag nowheel' : 'read-content'}`}
       onKeyDown={(e) => {
         e.stopPropagation()
         if (e.key === 'Escape') onDone()

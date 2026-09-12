@@ -973,3 +973,19 @@ main.canvas-page {
     transition: none !important;
   }
 }
+/* Reading content belongs to the draggable card; editing opts out of dragging. */
+.is-reading .read-title,
+.read-content .node-editor,
+.read-content pre {
+  pointer-events: none;
+  user-select: none;
+}
+.is-reading .block-content,
+.is-reading .block-title,
+.read-content {
+  cursor: grab;
+}
+.is-reading:active .block-content,
+.is-reading:active .block-title {
+  cursor: grabbing;
+}

@@ -12,7 +12,18 @@ import RichEditor from './RichEditor'
 export default function BlockNode({ id, data, selected }: NodeProps<Block>) {
   const flow = useReactFlow<Block>()
   const [editing, setEditing] = useState(false)
+  const [wasSelected, setWasSelected] = useState(selected)
+  if (selected !== wasSelected) {
+    setWasSelected(selected)
+    if (!selected) setEditing(false)
+  }
   const active = !!selected && editing
+  const startEditing = () => {
+    flow.setNodes((nodes) =>
+      nodes.map((node) => ({ ...node, selected: node.id === id })),
+    )
+    setEditing(true)
+  }
   if (data.kind === 'section')
     return (
       <div className="block kind-section">
@@ -30,12 +41,15 @@ export default function BlockNode({ id, data, selected }: NodeProps<Block>) {
       </div>
     )
   return (
-    <div className={`block kind-${data.kind}`}>
+    <div
+      className={`block kind-${data.kind} ${active ? 'is-editing' : 'is-reading'}`}
+    >
       <NodeResizer isVisible={selected} minWidth={220} minHeight={140} />
       <Handle type="target" position={Position.Left} />
-      <div className="block-title">
+      <div className="block-title" onDoubleClick={startEditing}>
         <input
-          className="nodrag"
+          className={active ? 'nodrag' : 'read-title'}
+          readOnly={!active}
           aria-label="Node title"
           value={data.title}
           onChange={(e) => flow.updateNodeData(id, { title: e.target.value })}
@@ -50,12 +64,12 @@ export default function BlockNode({ id, data, selected }: NodeProps<Block>) {
                 : 'Stop editing node'
               : 'Edit node'
           }
-          onClick={() => setEditing(!active)}
+          onClick={() => (active ? setEditing(false) : startEditing())}
         >
           {active ? 'Done' : 'Edit'}
         </button>
       </div>
-      <div className="block-content" onDoubleClick={() => setEditing(true)}>
+      <div className="block-content" onDoubleClick={startEditing}>
         {data.kind === 'code' ? (
           <CodeEditor
             code={data.code}

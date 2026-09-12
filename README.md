@@ -32,7 +32,7 @@ The test runner starts a development server when needed. To test a running produ
 - Infinite-style canvas with pan/zoom, double-click creation, movement, resizing, multi-selection, duplication, deletion, and optional minimap.
 - Standard, process, decision, input/output, note, and code nodes.
 - Rich text: bold, italic, underline, strikethrough, headings, font sizes, bullet/numbered lists, inline code, alignment, and HTTP(S) links.
-- Contextual formatting toolbar. Click **Edit** or double-click the content; use **Done** or Escape to finish rich-text editing. Drag the header to move a node.
+- Contextual formatting toolbar. Click **Edit** or double-click the content; use **Done** or Escape to finish rich-text editing. Drag anywhere on the reading card—including text, code, and its title—to move it. Double-click content or the title to edit; text selection stays inside the editor until you finish. Dedicated buttons and connection handles keep their normal actions.
 - Code with language selection, syntax-highlighted reading mode, plain-text editing, indentation with Tab, and copying. Includes JavaScript, TypeScript, Python, Java, C, C++, Swift, SQL, shell, JSON, CSS, and HTML.
 - Directional connections with optional labels and solid/dashed lines. Drag between side dots, then select a connection to customize it.
 - Movable, resizable sections. Select related nodes and group them; ungroup preserves their positions.

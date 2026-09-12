@@ -15,7 +15,11 @@ test('create, edit, close, reopen, rename, and delete a saved canvas', async ({
   await page
     .locator('.react-flow__pane')
     .dblclick({ position: { x: 160, y: 200 } })
+  await page.locator('.block-title').dblclick({ position: { x: 60, y: 20 } })
   await page.getByLabel('Node title', { exact: true }).fill('API gateway')
+  await page
+    .getByRole('button', { name: 'Finish editing', exact: true })
+    .click()
   await page.getByRole('button', { name: 'Edit node', exact: true }).click()
   await page
     .getByRole('textbox', { name: 'Node content' })
@@ -94,6 +98,7 @@ test('backup import creates an independent editable canvas', async ({
 }) => {
   await page.goto('/canvas/new')
   await page.getByRole('button', { name: 'Add node', exact: true }).click()
+  await page.locator('.block-title').dblclick({ position: { x: 60, y: 20 } })
   await page.getByLabel('Node title', { exact: true }).fill('Recovered idea')
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Download backup' }).click()

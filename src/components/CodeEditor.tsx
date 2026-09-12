@@ -64,11 +64,12 @@ export default function CodeEditor({
   }, [code, language])
   return (
     <div
-      className="code-editor nodrag nowheel"
+      className={`code-editor ${active ? 'nodrag nowheel' : 'read-content'}`}
       onKeyDown={(e) => e.stopPropagation()}
     >
       <div className="code-heading">
         <select
+          className="nodrag"
           aria-label="Code language"
           value={language}
           onChange={(e) => onChange({ language: e.target.value })}
@@ -78,6 +79,7 @@ export default function CodeEditor({
           ))}
         </select>
         <button
+          className="nodrag"
           aria-label="Copy code"
           onClick={async () => {
             try {
