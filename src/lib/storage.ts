@@ -52,7 +52,16 @@ export function readCanvas(id: string): CanvasDocument | null {
     throw Error(
       'This canvas could not be read. Its saved data has been left untouched.',
     )
-  return record.document
+  return {
+    ...record.document,
+    edges: record.document.edges.map(
+      (edge: CanvasDocument['edges'][number]) => ({
+        ...edge,
+        sourceHandle: edge.sourceHandle ?? 'right',
+        targetHandle: edge.targetHandle ?? 'left',
+      }),
+    ),
+  }
 }
 export function saveCanvas(doc: CanvasDocument) {
   localStorage.setItem(

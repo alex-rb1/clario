@@ -6,6 +6,7 @@ import {
   applyNodeChanges,
   Background,
   Controls,
+  ConnectionMode,
   MarkerType,
   MiniMap,
   ReactFlow,
@@ -208,6 +209,7 @@ function CanvasEditor({
         </div>
         <SelectionPanel nodes={nodes} edges={edges} />
         <ReactFlow
+          connectionMode={ConnectionMode.Loose}
           fitView={!doc.viewport && doc.nodes.length > 0}
           fitViewOptions={{ padding: 0.22, maxZoom: 1 }}
           defaultViewport={doc.viewport}

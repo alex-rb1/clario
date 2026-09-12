@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Handle,
   NodeResizer,
   Position,
   useReactFlow,
+  useUpdateNodeInternals,
   type NodeProps,
 } from '@xyflow/react'
 import type { Block } from '../lib/types'
@@ -11,6 +12,10 @@ import CodeEditor from './CodeEditor'
 import RichEditor from './RichEditor'
 export default function BlockNode({ id, data, selected }: NodeProps<Block>) {
   const flow = useReactFlow<Block>()
+  const updateNodeInternals = useUpdateNodeInternals()
+  useEffect(() => {
+    updateNodeInternals(id)
+  }, [id, data.kind, updateNodeInternals])
   const [editing, setEditing] = useState(false)
   const [wasSelected, setWasSelected] = useState(selected)
   if (selected !== wasSelected) {
@@ -45,8 +50,8 @@ export default function BlockNode({ id, data, selected }: NodeProps<Block>) {
       className={`block kind-${data.kind} ${active ? 'is-editing' : 'is-reading'}`}
     >
       <NodeResizer isVisible={selected} minWidth={220} minHeight={140} />
-      <Handle type="target" position={Position.Left} />
-      <Handle id="top" type="target" position={Position.Top} />
+      <Handle id="left" type="source" position={Position.Left} />
+      <Handle id="top" type="source" position={Position.Top} />
       <div className="block-title" onDoubleClick={startEditing}>
         <input
           className={active ? 'nodrag' : 'read-title'}
@@ -87,7 +92,7 @@ export default function BlockNode({ id, data, selected }: NodeProps<Block>) {
           />
         )}
       </div>
-      <Handle type="source" position={Position.Right} />
+      <Handle id="right" type="source" position={Position.Right} />
       <Handle id="bottom" type="source" position={Position.Bottom} />
     </div>
   )

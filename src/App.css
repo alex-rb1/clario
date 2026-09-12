@@ -989,3 +989,10 @@ main.canvas-page {
 .is-reading:active .block-title {
   cursor: grabbing;
 }
+/* Connection dots take precedence over the overlapping edge resize controls. */
+.react-flow__handle {
+  z-index: 10;
+  width: 14px;
+  height: 14px;
+  cursor: crosshair;
+}

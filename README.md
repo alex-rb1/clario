@@ -34,7 +34,7 @@ The test runner starts a development server when needed. To test a running produ
 - Rich text: bold, italic, underline, strikethrough, headings, font sizes, bullet/numbered lists, inline code, alignment, and HTTP(S) links.
 - Contextual formatting toolbar. Click **Edit** or double-click the content; use **Done** or Escape to finish rich-text editing. Drag anywhere on the reading card—including text, code, and its title—to move it. Double-click content or the title to edit; text selection stays inside the editor until you finish. Dedicated buttons and connection handles keep their normal actions.
 - Code with language selection, syntax-highlighted reading mode, plain-text editing, indentation with Tab, and copying. Includes JavaScript, TypeScript, Python, Java, C, C++, Swift, SQL, shell, JSON, CSS, and HTML.
-- Directional connections with optional labels and solid/dashed lines. Connect from the right or bottom dots to the left or top dots, then select a connection to customize it.
+- Directional connections with optional labels and solid/dashed lines. Drag from any side dot to any side dot on another card, then select a connection to customize it.
 - Movable, resizable sections. Select related nodes and group them; ungroup preserves their positions.
 - Diagram undo/redo with up to 100 checkpoints. Continuous edits coalesce; selection and measurement changes do not enter history. Rich-text editing also supports the editor’s native undo shortcuts.
 - Local autosave of content, connections, sizes, positions, names, and viewport. Dashboard previews, search, rename, and delete.
