@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 test('create, edit, close, reopen, rename, and delete a saved canvas',async({page,context})=>{
- await page.goto('/');await page.getByRole('button',{name:'New canvas',exact:true}).click()
+ await page.goto('/');await page.getByRole('button',{name:'New canvas',exact:true}).click();await page.locator('.template-option').filter({has:page.getByText('Blank',{exact:true})}).click()
  await page.getByLabel('Canvas name',{exact:true}).fill('Architecture notes')
  await page.locator('.react-flow__pane').dblclick({position:{x:160,y:200}})
  await page.getByLabel('Node title',{exact:true}).fill('API gateway')
