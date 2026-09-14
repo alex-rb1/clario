@@ -44,6 +44,7 @@ test('labels slide along the path, resize, undo, and persist', async ({
   await page.goto('/canvas/labels')
   const label = page.locator('.wire-label')
   await expect(label).toBeVisible()
+  await page.locator('[data-id="a"]').click({ position: { x: 30, y: 70 } })
   const before = (await label.boundingBox())!
   await label.hover()
   await page.mouse.down()
@@ -54,6 +55,7 @@ test('labels slide along the path, resize, undo, and persist', async ({
   )
   await page.mouse.up()
   expect((await label.boundingBox())!.x).toBeGreaterThan(before.x + 60)
+  await expect(page.getByLabel('Label size')).toBeVisible()
   const resize = page.getByLabel('Resize connection label')
   const corner = (await resize.boundingBox())!
   await resize.hover()

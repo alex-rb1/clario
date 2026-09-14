@@ -31,6 +31,8 @@ import { useAutosave, downloadDocument } from '../lib/useAutosave'
 import Dialog from './Dialog'
 import { useCanvasShortcuts } from '../lib/useCanvasShortcuts'
 import CanvasToolbar from './CanvasToolbar'
+import { useFreehand } from '../lib/useFreehand'
+import FreehandPreview from './FreehandPreview'
 import RoutedEdge from './RoutedEdge'
 const edgeTypes = { default: RoutedEdge }
 const nodeTypes = { block: BlockNode }
@@ -87,6 +89,14 @@ function CanvasEditor({
   const [minimap, setMinimap] = useState(false),
     [help, setHelp] = useState(false)
   const flow = useReactFlow<Block>()
+  const [wireMode, setWireMode] = useState<'auto' | 'freehand'>('auto')
+  const freehand = useFreehand(wireMode === 'freehand', (edge) =>
+    update((d) => ({
+      ...d,
+      nodes: d.nodes.map((n) => ({ ...n, selected: false })),
+      edges: [...d.edges.map((e) => ({ ...e, selected: false })), edge],
+    })),
+  )
   const onNodesChange: OnNodesChange<Block> = useCallback(
     (changes) =>
       update(
@@ -177,8 +187,12 @@ function CanvasEditor({
       </div>
       <div
         className="canvas-workspace"
+        onPointerMoveCapture={freehand.move}
+        onPointerUpCapture={freehand.up}
+        onPointerCancel={freehand.cancel}
         onPointerDownCapture={(e) => {
           if ((e.target as Element).closest('.wire-label')) endMerge()
+          freehand.down(e)
         }}
       >
         <CanvasToolbar
@@ -194,6 +208,42 @@ function CanvasEditor({
           canUndo={canUndo}
           canRedo={canRedo}
         />
+        <div
+          className="wire-mode"
+          role="group"
+          aria-label="Connector drawing mode"
+        >
+          <button
+            aria-pressed={wireMode === 'auto'}
+            onClick={() => {
+              freehand.cancel()
+              setWireMode('auto')
+            }}
+          >
+            Auto connect
+          </button>
+          <button
+            aria-pressed={wireMode === 'freehand'}
+            onClick={() => {
+              freehand.cancel()
+              setWireMode('freehand')
+            }}
+          >
+            Freehand
+          </button>
+          {wireMode === 'freehand' && (
+            <span role="status">
+              {freehand.notice ||
+                'Draw from a dot to another dot · Esc cancels'}
+            </span>
+          )}
+        </div>
+        {freehand.preview && (
+          <FreehandPreview
+            points={freehand.preview.points}
+            target={freehand.preview.target}
+          />
+        )}
         <div className="canvas-bottom">
           <button
             aria-label="Toggle minimap"
@@ -217,6 +267,7 @@ function CanvasEditor({
         <SelectionPanel nodes={nodes} edges={edges} />
         <ReactFlow
           connectionMode={ConnectionMode.Loose}
+          connectionRadius={30}
           fitView={!doc.viewport && doc.nodes.length > 0}
           fitViewOptions={{ padding: 0.22, maxZoom: 1 }}
           defaultViewport={doc.viewport}

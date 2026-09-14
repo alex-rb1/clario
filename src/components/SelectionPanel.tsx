@@ -49,6 +49,21 @@ export default function SelectionPanel({
     return (
       <aside className="selection-panel">
         <span className="eyebrow">CONNECTION</span>
+        {edge[0].data?.freehand ? (
+          <label>
+            Routing
+            <select
+              aria-label="Wire routing"
+              value={String(edge[0].data?.routing ?? 'auto')}
+              onChange={(e) =>
+                flow.updateEdgeData(edge[0].id, { routing: e.target.value })
+              }
+            >
+              <option value="auto">Automatic</option>
+              <option value="freehand">My drawing</option>
+            </select>
+          </label>
+        ) : null}
         <label>
           Label
           <input

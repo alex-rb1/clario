@@ -5,11 +5,20 @@ import {
   useNodes,
   type EdgeProps,
 } from '@xyflow/react'
+import { freehandPath, type FreehandStroke } from '../lib/freehand'
 import WireLabel from './WireLabel'
 import { routeWire, roundedPath, labelPosition } from '../lib/routing'
 export default function RoutedEdge(props: EdgeProps) {
   const nodes = useNodes()
   const [path, labelX, labelY] = useMemo(() => {
+    if (props.data?.routing === 'freehand' && props.data.freehand) {
+      const path = freehandPath(
+        props.data.freehand as FreehandStroke,
+        { x: props.sourceX, y: props.sourceY },
+        { x: props.targetX, y: props.targetY },
+      )
+      return [path, 0, 0] as const
+    }
     const position = (
       id: string,
       seen = new Set<string>(),

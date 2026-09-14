@@ -41,6 +41,7 @@ export default function WireLabel({
     e.preventDefault()
     e.currentTarget.setPointerCapture(e.pointerId)
     drag.current = { mode, x: e.clientX, size, t }
+    flow.setNodes((ns) => ns.map((node) => ({ ...node, selected: false })))
     flow.setEdges((es) =>
       es.map((edge) => ({ ...edge, selected: edge.id === id })),
     )

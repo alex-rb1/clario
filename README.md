@@ -34,6 +34,7 @@ The test runner starts a development server when needed. To test a running produ
 - Rich text: bold, italic, underline, strikethrough, headings, font sizes, bullet/numbered lists, inline code, alignment, and HTTP(S) links.
 - Contextual formatting toolbar. Click **Edit** or double-click the content; use **Done** or Escape to finish rich-text editing. Drag anywhere on the reading card—including text, code, and its title—to move it. Double-click content or the title to edit; text selection stays inside the editor until you finish. Dedicated buttons and connection handles keep their normal actions.
 - Code with language selection, syntax-highlighted reading mode, plain-text editing, indentation with Tab, and copying. Includes JavaScript, TypeScript, Python, Java, C, C++, Swift, SQL, shell, JSON, CSS, and HTML.
+- **Auto connect / Freehand** toggle: automatic obstacle routing or your own drawn stroke. In Freehand mode, start on any dot and release near another card’s dot; a highlighted ring previews the snap. Escape cancels. Drawn wires stay attached as cards move. Select a drawn wire to switch between Automatic and My drawing.
 - Thicker wires and prominent arrowheads. Drag labels along their wires; resize selected labels with the corner grip or the label-size slider. Label geometry autosaves and supports undo/redo.
 - Directional connections with rounded right-angle routing, automatic detours around cards, optional labels, and solid/dashed lines. Drag from any side dot to any side dot on another card, then select a connection to customize it.
 - Movable, resizable sections. Select related nodes and group them; ungroup preserves their positions.
@@ -86,6 +87,8 @@ src/
     BlockNode.tsx          Node shell, title, and content type
     RichEditor.tsx          Tiptap editor and contextual formatting
     CodeEditor.tsx          Source editing, highlighting, copying
+    WireLabel.tsx          Draggable labels and resize grips
+    FreehandPreview.tsx    Live drawing and snap feedback
     RoutedEdge.tsx         Obstacle-aware wire rendering
     SelectionPanel.tsx      Node and connection options
     CanvasPreview.tsx      Lightweight dashboard SVG previews
@@ -96,6 +99,8 @@ src/
     storage.ts             Versioned local persistence and backup import
     useAutosave.ts         Save status and downloadable backups
     useDiagram.ts          Diagram updates and history
+    freehand.ts            Stroke geometry attached to moving endpoints
+    useFreehand.ts         Pointer drawing, snapping, and cancellation
     routing.ts             Orthogonal pathfinding and rounded paths
     operations.ts          Duplication, grouping, ungrouping
     useCanvasShortcuts.ts  Keyboard interactions
@@ -121,6 +126,7 @@ All eight milestones were implemented in order, with milestone commits and verif
 - Storage belongs to one browser and origin. Clearing site data removes canvases; use backups for portability. No cloud sync or simultaneous multi-tab editing guarantees.
 - Local storage has a browser-defined size limit. Very large diagrams and long code blocks can reach it; failures are shown rather than reported as saved.
 - History is session-local, and title edits in plain input fields follow native input undo behavior. There is no persistent version history.
+- Freehand wires retain your drawn route rather than automatically avoiding cards. Unattached strokes are discarded when released; connectors join two cards.
 - Wire crossings can remain in dense diagrams. Overlapping cards or blocked ports fall back to a simple rounded route.
 - Sections are a single organizational level; nested section creation is intentionally excluded.
 - Code is highlighted in reading mode; the editing surface is plain text rather than a full IDE.
