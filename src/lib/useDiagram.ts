@@ -14,6 +14,9 @@ function signature(d: Diagram) {
       source: e.source,
       target: e.target,
       label: e.label,
+      data: e.data,
+      sourceHandle: e.sourceHandle,
+      targetHandle: e.targetHandle,
       style: e.style,
     })),
   })

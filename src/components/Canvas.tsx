@@ -175,7 +175,12 @@ function CanvasEditor({
           <Download size={16} />
         </button>
       </div>
-      <div className="canvas-workspace">
+      <div
+        className="canvas-workspace"
+        onPointerDownCapture={(e) => {
+          if ((e.target as Element).closest('.wire-label')) endMerge()
+        }}
+      >
         <CanvasToolbar
           nodes={nodes}
           edges={edges}

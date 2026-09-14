@@ -996,3 +996,31 @@ main.canvas-page {
   height: 14px;
   cursor: crosshair;
 }
+.app {
+  --wire-color: #a6b59f;
+}
+.app[data-theme='light'] {
+  --wire-color: #526b4b;
+}
+.react-flow__edge-path {
+  stroke: var(--wire-color);
+  stroke-width: 2.6;
+}
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--accent);
+  stroke-width: 3.2;
+}
+.wire-label-bg {
+  fill: var(--panel);
+  stroke: var(--wire-color);
+  stroke-width: 1;
+}
+.wire-label-resize {
+  fill: var(--accent);
+  stroke: var(--text);
+  stroke-width: 1;
+}
+.react-flow__connection-path {
+  stroke: var(--wire-color);
+  stroke-width: 2.6;
+}

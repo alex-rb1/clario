@@ -5,6 +5,7 @@ import {
   useNodes,
   type EdgeProps,
 } from '@xyflow/react'
+import WireLabel from './WireLabel'
 import { routeWire, roundedPath, labelPosition } from '../lib/routing'
 export default function RoutedEdge(props: EdgeProps) {
   const nodes = useNodes()
@@ -39,21 +40,46 @@ export default function RoutedEdge(props: EdgeProps) {
     return [roundedPath(points), label.x, label.y] as const
   }, [nodes, props])
   return (
-    <BaseEdge
-      id={props.id}
-      path={path}
-      labelX={labelX}
-      labelY={labelY}
-      label={props.label}
-      labelStyle={props.labelStyle}
-      labelShowBg={props.labelShowBg}
-      labelBgStyle={props.labelBgStyle}
-      labelBgPadding={[7, 4]}
-      labelBgBorderRadius={4}
-      style={props.style}
-      markerEnd={props.markerEnd}
-      markerStart={props.markerStart}
-      interactionWidth={20}
-    />
+    <>
+      <defs>
+        <marker
+          id={`arrow-${props.id}`}
+          viewBox="0 0 12 12"
+          refX="11"
+          refY="6"
+          markerWidth="18"
+          markerHeight="18"
+          markerUnits="userSpaceOnUse"
+          orient="auto-start-reverse"
+        >
+          <path d="M 1 1 L 11 6 L 1 11 Z" fill="var(--wire-color)" />
+        </marker>
+      </defs>
+      <BaseEdge
+        id={props.id}
+        path={path}
+        labelX={labelX}
+        labelY={labelY}
+        label={undefined}
+        labelStyle={props.labelStyle}
+        labelShowBg={props.labelShowBg}
+        labelBgStyle={props.labelBgStyle}
+        labelBgPadding={[7, 4]}
+        labelBgBorderRadius={4}
+        style={props.style}
+        markerEnd={`url(#arrow-${props.id})`}
+        markerStart={props.markerStart}
+        interactionWidth={28}
+      />
+      {props.label && (
+        <WireLabel
+          id={props.id}
+          path={path}
+          label={String(props.label)}
+          data={props.data ?? {}}
+          selected={props.selected}
+        />
+      )}
+    </>
   )
 }

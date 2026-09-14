@@ -59,6 +59,41 @@ export default function SelectionPanel({
             }
           />
         </label>
+        {edge[0].label && (
+          <>
+            <label>
+              Label size
+              <input
+                aria-label="Label size"
+                type="range"
+                min="10"
+                max="36"
+                value={Number(edge[0].data?.labelSize ?? 14)}
+                onChange={(e) =>
+                  flow.updateEdgeData(edge[0].id, {
+                    labelSize: Number(e.target.value),
+                  })
+                }
+              />
+            </label>
+            <label>
+              Label position
+              <input
+                aria-label="Label position"
+                type="range"
+                min="0"
+                max="100"
+                value={Number(edge[0].data?.labelPosition ?? 0.5) * 100}
+                onChange={(e) =>
+                  flow.updateEdgeData(edge[0].id, {
+                    labelPosition: Number(e.target.value) / 100,
+                  })
+                }
+              />
+            </label>
+            <p>Drag the label along the wire. Drag its corner to resize.</p>
+          </>
+        )}
         <label>
           Line style
           <select
